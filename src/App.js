@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { RouterProvider } from "react-router-dom";
+import MainRoutes from "./Routes/MainRoutes";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import auth from "./Firebase/Firebase.config";
+import { useDispatch } from "react-redux";
+import { logInInfo } from "./Feature/AuthSlice/AuthSlice";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const subscribe = onAuthStateChanged(auth, (user) => {
+      dispatch(logInInfo(user))
+    });
+    return () => {
+      subscribe();
+    };
+  }, []);
+
+  return <RouterProvider router={MainRoutes}></RouterProvider>;
 }
 
 export default App;
